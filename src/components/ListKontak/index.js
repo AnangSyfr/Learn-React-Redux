@@ -1,17 +1,22 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import { getListKontak } from '../../actions/kontakAction';
+import { deleteKontak, detailKontak, getListKontak } from '../../actions/kontakAction';
 
 const ListKontak = () => {
-    const { getListKontakResult, getListKontakLoading, getListKontakError } = useSelector((state) => state.kontakReducer);
+    const { getListKontakResult, getListKontakLoading, getListKontakError, deleteListKontakResult } = useSelector((state) => state.kontakReducer);
     const dispatch = useDispatch();
-
+    
     useEffect(() => {
         //panggil action getListKontak
-        console.log("1. Use effect component did mount");
         dispatch(getListKontak());
 
     },[dispatch]);
+
+    useEffect(() => {
+        if(deleteListKontakResult){
+            dispatch(getListKontak());
+        }
+    },[deleteListKontakResult, dispatch])
 
     return (
         <div>
@@ -20,7 +25,11 @@ const ListKontak = () => {
                 getListKontakResult ? (
                     getListKontakResult.map((kontak) => {
                         return (
-                            <p key={kontak.id}>{kontak.nama} - {kontak.nomor}</p>
+                            <p key={kontak.id}>
+                                {kontak.nama} - {kontak.nomor} |
+                                <button onClick={ () => dispatch(deleteKontak(kontak.id)) }>Delete</button>
+                                <button onClick={ () => dispatch(detailKontak(kontak))} style={{marginLeft:"20px"}}>Edit</button>
+                            </p>
                         )
                     })
                 )
